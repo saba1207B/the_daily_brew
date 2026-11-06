@@ -9,11 +9,11 @@ Designed and engineered with fluid typography, responsive layout stackings optim
 ## Features
 
 - **Full Mobile & Desktop Responsiveness**: Engineered for Android (Chrome, Firefox, Samsung Internet) and iOS (Safari WebKit) with safe-area insets (`env(safe-area-inset-*)`), dynamic viewport units (`100dvh`), and zero horizontal overflow.
-- **Intro Dripping Screen**: Opening liquid flow effect and organic aperture reveal transition on initial scroll.
+- **Device-adaptive intro**: Desktop browsers get the chocolate liquid intro; mobile browsers get a clean cream logo screen with the same scroll-driven aperture transition and no liquid renderer.
 - **Editorial Hero Section**: Bold Cormorant Garamond typography paired with full-bleed artisanal coffee photography.
 - **Full-Screen Menu Showcase**: ScrollTrigger-driven product cards with kinetic text wipe reveals, dynamic parallax elevation, and radiant pricing aura.
 - **Twinkling Golden Star Cursor**: High-DPI Canvas 2D particle system emitting 4-pointed golden stars and glowing dust on desktop (gracefully disabled on mobile touchscreens).
-- **Smooth Inertia Scrolling**: Lenis smooth scroll integration calibrated for 1:1 wheel response and native mobile touch momentum.
+- **Smooth Scrolling & Transitions**: Lenis smooth scrolling and GSAP section/menu transitions remain active across desktop and mobile browsers.
 - **Interactive Wordmark**: Split-diagonal clip-path text sweep in the footer.
 - **Custom 404 Experience**: Café-themed error page with playful coffee animations and quick return navigation.
 

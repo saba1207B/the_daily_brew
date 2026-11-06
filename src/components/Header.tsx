@@ -51,11 +51,14 @@ export default function Header() {
     scrolled && !menuOpen
       ? 'border-beige bg-cream/95 backdrop-blur-md shadow-sm'
       : 'border-transparent bg-transparent';
+  const mobileSurface = !menuOpen
+    ? 'max-md:border-beige max-md:bg-cream/95 max-md:text-espresso max-md:backdrop-blur-md'
+    : '';
 
   return (
     <>
       <header
-        className={`fixed inset-x-0 top-0 z-50 border-b transition-colors duration-500 ${tone} ${surface} pt-[env(safe-area-inset-top)]`}
+        className={`fixed inset-x-0 top-0 z-50 border-b transition-colors duration-500 ${tone} ${surface} ${mobileSurface} pt-[env(safe-area-inset-top)]`}
       >
         <div className="mx-auto flex h-[72px] max-w-[1440px] items-center justify-between px-6 md:px-10 lg:px-16">
           <a href="#home" className="group flex items-center gap-3">
