@@ -1,4 +1,4 @@
-import { useLayoutEffect, useRef, type ReactNode } from 'react';
+import { useEffect, useLayoutEffect, useRef, useState, type ReactNode } from 'react';
 import { gsap } from '@/lib/gsap';
 import GooeyOverlayWebGL from '@/components/GooeyOverlayWebGL';
 import ChocolateLiquidBackground from '@/components/ChocolateLiquidBackground';
@@ -20,11 +20,49 @@ export default function IntroDrippingScreen({
   flowEngine = 'webgl',
   colorTheme = 'chocolate',
 }: IntroDrippingScreenProps) {
+  const [webglAvailable, setWebglAvailable] = useState(false);
+  const [reducedMotion, setReducedMotion] = useState(false);
+  const [smallScreen, setSmallScreen] = useState(() => {
+    if (typeof window === 'undefined') return false;
+    const mobileAgent = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+    return mobileAgent || window.matchMedia('(max-width: 767px)').matches;
+  });
   const containerRef = useRef<HTMLDivElement>(null);
   const curtainRef = useRef<HTMLDivElement>(null);
   const heroStickyRef = useRef<HTMLDivElement>(null);
   const logoWrapperRef = useRef<HTMLDivElement>(null);
   const cueRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const canvas = document.createElement('canvas');
+    const screenQuery = window.matchMedia('(max-width: 767px)');
+    const mobileAgent = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+    const updateScreenSize = () => setSmallScreen(mobileAgent || screenQuery.matches);
+    updateScreenSize();
+
+    const canUseWebGL = !mobileAgent && !screenQuery.matches && Boolean(
+      canvas.getContext('webgl2') ||
+      canvas.getContext('webgl') ||
+      canvas.getContext('experimental-webgl'),
+    );
+    setWebglAvailable(canUseWebGL);
+
+    const motionQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
+    const updateMotionPreference = () => setReducedMotion(motionQuery.matches);
+    updateMotionPreference();
+    updateScreenSize();
+    motionQuery.addEventListener('change', updateMotionPreference);
+    screenQuery.addEventListener('change', updateScreenSize);
+    return () => {
+      motionQuery.removeEventListener('change', updateMotionPreference);
+      screenQuery.removeEventListener('change', updateScreenSize);
+    };
+  }, []);
+
+  // The mobile WebGL renderer has shown inconsistent output across Android
+  // browser/GPU combinations. Use the deterministic SVG drip on phone-sized
+  // screens and keep runtime WebGL enhancement on larger screens.
+  const activeFlowEngine = !smallScreen && !reducedMotion && webglAvailable ? flowEngine : 'svg';
 
   useLayoutEffect(() => {
     const container = containerRef.current;
@@ -163,7 +201,7 @@ export default function IntroDrippingScreen({
     });
 
     return () => mm.revert();
-  }, []);
+  }, [smallScreen]);
 
   const handleAutoWarp = () => {
     const finalScroll = Math.round(window.innerHeight * 1.5);
@@ -196,9 +234,9 @@ export default function IntroDrippingScreen({
       <div
         ref={curtainRef}
         id="intro-curtain"
-        className="pointer-events-none fixed inset-0 z-30 flex h-screen h-[100dvh] w-full origin-center flex-col items-center justify-center overflow-hidden bg-[#FFF0E5] shadow-[0_30px_90px_rgba(28,13,7,0.45)] will-change-transform"
+        className="pointer-events-none fixed inset-0 z-[60] flex h-screen h-[100dvh] w-full origin-center flex-col items-center justify-center overflow-hidden bg-[#FFF0E5] shadow-[0_30px_90px_rgba(28,13,7,0.45)] will-change-transform"
       >
-        {flowEngine === 'webgl' && (
+        {!smallScreen && activeFlowEngine === 'webgl' && (
           <GooeyOverlayWebGL
             colorTheme={colorTheme}
             colWidth={0.7}
@@ -210,7 +248,7 @@ export default function IntroDrippingScreen({
           />
         )}
 
-        {flowEngine === 'svg' && <ChocolateLiquidBackground />}
+        {!smallScreen && activeFlowEngine === 'svg' && <ChocolateLiquidBackground />}
 
         {/* Center Overlay: Logo & Wordings */}
         <div
