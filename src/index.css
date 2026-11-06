@@ -1,0 +1,249 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ============================================================
+   GLOBAL BASE & MOBILE VIEWPORT RESILIENCE
+   ============================================================ */
+:root {
+  --sat: env(safe-area-inset-top, 0px);
+  --sab: env(safe-area-inset-bottom, 0px);
+  --sal: env(safe-area-inset-left, 0px);
+  --sar: env(safe-area-inset-right, 0px);
+  --warp-duration: 1.8s;
+  --warp-ease: cubic-bezier(0.65, 0, 0.35, 1);
+}
+
+@layer base {
+  html {
+    @apply bg-cream font-sans text-espresso antialiased;
+    font-feature-settings: 'kern' 1, 'liga' 1, 'calt' 1;
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+    -webkit-tap-highlight-color: transparent;
+    touch-action: pan-y;
+  }
+
+  body {
+    @apply leading-[1.6];
+    overflow-x: hidden;
+    width: 100%;
+    min-height: 100%;
+    min-height: 100dvh;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  h1,
+  h2,
+  h3 {
+    @apply font-serif font-normal leading-[1.15];
+    letter-spacing: -0.01em;
+  }
+
+  section[id] {
+    scroll-margin-top: calc(72px + var(--sat));
+  }
+
+  :focus-visible {
+    @apply outline-2 outline-offset-4 outline-caramel-deep;
+    border-radius: 2px;
+  }
+
+  ::selection {
+    @apply bg-caramel/30 text-espresso-deep;
+  }
+
+  /* Custom scrollbar */
+  ::-webkit-scrollbar {
+    width: 6px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: #F5F0E8;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: #B98252;
+    border-radius: 3px;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background: #8C5B34;
+  }
+}
+
+/* ============================================================
+   LENIS SMOOTH SCROLL INTEGRATION
+   ============================================================ */
+html.lenis,
+html.lenis body {
+  height: auto;
+}
+
+.lenis.lenis-smooth {
+  scroll-behavior: auto !important;
+}
+
+.lenis.lenis-stopped {
+  overflow: hidden;
+}
+
+/* ============================================================
+   TYPOGRAPHY UTILITIES
+   ============================================================ */
+@layer utilities {
+  .tracking-editorial {
+    letter-spacing: -0.02em;
+  }
+
+  .safe-pt {
+    padding-top: calc(72px + var(--sat));
+  }
+
+  .safe-pb {
+    padding-bottom: calc(1.5rem + var(--sab));
+  }
+}
+
+/* ============================================================
+   REDUCED MOTION ACCESSIBILITY
+   ============================================================ */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* ============================================================
+   CLIP-PATH INTERACTIVE WORDMARK
+   ============================================================ */
+.clip-path-wordmark {
+  position: relative;
+  display: block;
+}
+
+.clip-path-wordmark .wordmark-layer-top {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  transition: clip-path 0.55s cubic-bezier(0.22, 1, 0.36, 1);
+  clip-path: polygon(0 0, 100% 0, 100% 0, 0% 100%);
+}
+
+.clip-path-wordmark .wordmark-layer-top:hover {
+  cursor: pointer;
+  clip-path: polygon(0 0, 100% 0, 100% 100%, 0% 100%);
+}
+
+.clip-path-wordmark .wordmark-layer-base:hover ~ .wordmark-layer-top {
+  clip-path: polygon(0 0, 100% 0, 100% 0, 0 0);
+}
+
+/* ============================================================
+   VIEW TRANSITION MASKS (Continuous Fluid Aperture)
+   ============================================================ */
+::view-transition-old(root) {
+  animation: warp-hide-view-landscape var(--warp-duration) var(--warp-ease) forwards;
+  -webkit-mask: url("/assets/transitions/tail.svg") center top no-repeat,
+                url("/assets/transitions/space-landscape.svg") center center no-repeat;
+  mask: url("/assets/transitions/tail.svg") center top no-repeat,
+        url("/assets/transitions/space-landscape.svg") center center no-repeat;
+  -webkit-mask-repeat: no-repeat;
+  mask-repeat: no-repeat;
+  -webkit-mask-size: 10rem 30rem, 500% 500%;
+  mask-size: 10rem 30rem, 500% 500%;
+  transform-origin: center center;
+}
+
+::view-transition-new(root) {
+  animation: warp-show-view var(--warp-duration) var(--warp-ease) forwards;
+}
+
+@media (orientation: portrait) {
+  ::view-transition-old(root) {
+    -webkit-mask: url("/assets/transitions/tail.svg") center top no-repeat,
+                  url("/assets/transitions/space.svg") center center no-repeat;
+    mask: url("/assets/transitions/tail.svg") center top no-repeat,
+          url("/assets/transitions/space.svg") center center no-repeat;
+    -webkit-mask-size: 10rem 20rem, 300% 300%;
+    mask-size: 10rem 20rem, 300% 300%;
+    animation-name: warp-hide-view-portrait;
+  }
+}
+
+.warp-mask-layer {
+  -webkit-mask: url("/assets/transitions/tail.svg") center top no-repeat,
+                url("/assets/transitions/space-landscape.svg") center center no-repeat;
+  mask: url("/assets/transitions/tail.svg") center top no-repeat,
+        url("/assets/transitions/space-landscape.svg") center center no-repeat;
+  -webkit-mask-repeat: no-repeat;
+  mask-repeat: no-repeat;
+  -webkit-mask-size: 10rem 30rem, 500% 500%;
+  mask-size: 10rem 30rem, 500% 500%;
+  will-change: mask-position, transform;
+}
+
+@media (orientation: portrait) {
+  .warp-mask-layer {
+    -webkit-mask: url("/assets/transitions/tail.svg") center top no-repeat,
+                  url("/assets/transitions/space.svg") center center no-repeat;
+    mask: url("/assets/transitions/tail.svg") center top no-repeat,
+          url("/assets/transitions/space.svg") center center no-repeat;
+    -webkit-mask-size: 10rem 20rem, 300% 300%;
+    mask-size: 10rem 20rem, 300% 300%;
+  }
+}
+
+@keyframes warp-hide-view-landscape {
+  from {
+    -webkit-mask-position: 50% 120%, 50% 0%;
+            mask-position: 50% 120%, 50% 0%;
+    transform: scale(1.06);
+  }
+  50% {
+    -webkit-mask-position: 50% 120%, 50% 72%;
+            mask-position: 50% 120%, 50% 72%;
+    transform: scale(1);
+  }
+  to {
+    -webkit-mask-position: 50% -80%, 50% 140%;
+            mask-position: 50% -80%, 50% 140%;
+    transform: scale(1);
+  }
+}
+
+@keyframes warp-hide-view-portrait {
+  from {
+    -webkit-mask-position: 50% 120%, 50% 0%;
+            mask-position: 50% 120%, 50% 0%;
+    transform: scale(1.06);
+  }
+  50% {
+    -webkit-mask-position: 50% 120%, 50% 80%;
+            mask-position: 50% 120%, 50% 80%;
+    transform: scale(1);
+  }
+  to {
+    -webkit-mask-position: 50% -60%, 50% 140%;
+            mask-position: 50% -60%, 50% 140%;
+    transform: scale(1);
+  }
+}
+
+@keyframes warp-show-view {
+  from {
+    filter: saturate(30%);
+    opacity: 0.5;
+    transform: scale(1.04);
+  }
+  to {
+    filter: saturate(100%);
+    opacity: 1;
+    transform: scale(1);
+  }
+}
